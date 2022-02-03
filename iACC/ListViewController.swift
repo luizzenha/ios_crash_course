@@ -5,7 +5,7 @@
 import UIKit
 
 class ListViewController: UITableViewController {
-    var items = [Any]()
+    var items = [ListItemViewModel]()
     
     var retryCount = 0
     var maxRetryCount = 0
@@ -107,7 +107,22 @@ class ListViewController: UITableViewController {
                 }
             }
             
-            self.items = filteredItems
+            self.items = filteredItems.map { item in
+                
+                ListItemViewModel(item: item, longDateStyle: longDateStyle) {
+                    [weak self] in
+                    if let friend = item as? Friend {
+                        self?.select(friend: friend)
+                    } else if let card = item as? Card {
+                        self?.select(card: card)
+                    } else if let transfer = item as? Transfer {
+                        self?.select(transfer: transfer)
+                    }else{
+                        fatalError("Unknow item type")
+                    }
+                }
+                
+            }
             self.refreshControl?.endRefreshing()
             self.tableView.reloadData()
             
@@ -126,7 +141,12 @@ class ListViewController: UITableViewController {
                     DispatchQueue.mainAsyncIfNeeded {
                         switch result {
                         case let .success(items):
-                            self?.items = items
+                            self?.items = items.map { item in
+                                ListItemViewModel(friend: item, selection:{
+                                    [weak self] in
+                                    self?.select(friend: item)
+                                } )
+                            }
                             self?.tableView.reloadData()
                             
                         case let .failure(error):
@@ -142,7 +162,7 @@ class ListViewController: UITableViewController {
         }
     }
     
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         1
     }
@@ -154,31 +174,13 @@ class ListViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item = items[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemCell") ?? UITableViewCell(style: .subtitle, reuseIdentifier: "ItemCell")
-        let configItem: ListItemViewModel
-        if let friend = item as? Friend {
-            configItem = ListItemViewModel(friend: friend)
-        } else if let card = item as? Card {
-            configItem = ListItemViewModel(card: card)
-        } else if let transfer = item as? Transfer {
-            configItem = ListItemViewModel(transfer: transfer, longDateStyle: longDateStyle)
-        } else {
-            fatalError("unknown item: \(item)")
-        }
-        cell.configure(configItem)
+        cell.configure(item)
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = items[indexPath.row]
-        if let friend = item as? Friend {
-            select(friend: friend)
-        } else if let card = item as? Card {
-            select(card: card)
-        } else if let transfer = item as? Transfer {
-            select(transfer: transfer)
-        } else {
-            fatalError("unknown item: \(item)")
-        }
+        item.select()
     }
 }
 
