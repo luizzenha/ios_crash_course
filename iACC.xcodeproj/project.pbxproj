@@ -44,6 +44,8 @@
 		08927BD5268618AC009195BD /* FriendsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08927BCB268618AC009195BD /* FriendsAPI.swift */; };
 		08927BD6268618AC009195BD /* NotImplementedViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08927BCC268618AC009195BD /* NotImplementedViewControllers.swift */; };
 		C7A9EEB427AC8D9C00B119E0 /* ListItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB327AC8D9C00B119E0 /* ListItemViewModel.swift */; };
+		C7A9EEB827ACA2FF00B119E0 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB727ACA2FF00B119E0 /* UIViewController.swift */; };
+		C7A9EEBA27ACA33600B119E0 /* UITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +100,8 @@
 		08927BCB268618AC009195BD /* FriendsAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendsAPI.swift; sourceTree = "<group>"; };
 		08927BCC268618AC009195BD /* NotImplementedViewControllers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotImplementedViewControllers.swift; sourceTree = "<group>"; };
 		C7A9EEB327AC8D9C00B119E0 /* ListItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListItemViewModel.swift; path = ViewModel/ListItemViewModel.swift; sourceTree = "<group>"; };
+		C7A9EEB727ACA2FF00B119E0 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIViewController.swift; path = Extensions/UIViewController.swift; sourceTree = "<group>"; };
+		C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UITableViewCell.swift; path = Extensions/UITableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -220,6 +224,7 @@
 		08927B912686183A009195BD /* iACC */ = {
 			isa = PBXGroup;
 			children = (
+				C7A9EEB527ACA2E200B119E0 /* Extensions */,
 				C7A9EEB227AC8D6000B119E0 /* ViewModel */,
 				08927B922686183A009195BD /* AppDelegate.swift */,
 				08927B942686183A009195BD /* SceneDelegate.swift */,
@@ -267,6 +272,15 @@
 				C7A9EEB327AC8D9C00B119E0 /* ListItemViewModel.swift */,
 			);
 			name = ViewModel;
+			sourceTree = "<group>";
+		};
+		C7A9EEB527ACA2E200B119E0 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C7A9EEB727ACA2FF00B119E0 /* UIViewController.swift */,
+				C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -370,6 +384,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				08927B932686183A009195BD /* AppDelegate.swift in Sources */,
+				C7A9EEBA27ACA33600B119E0 /* UITableViewCell.swift in Sources */,
 				08927BCF268618AC009195BD /* ListViewController.swift in Sources */,
 				08040FFC268B4C1D0062A93B /* MainTabBarController.swift in Sources */,
 				08927BD0268618AC009195BD /* CardAPI.swift in Sources */,
@@ -383,6 +398,7 @@
 				08927BD2268618AC009195BD /* TransfersAPI.swift in Sources */,
 				08927BD4268618AC009195BD /* User.swift in Sources */,
 				C7A9EEB427AC8D9C00B119E0 /* ListItemViewModel.swift in Sources */,
+				C7A9EEB827ACA2FF00B119E0 /* UIViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
