@@ -70,19 +70,47 @@ class ListViewController: UITableViewController {
         if fromFriendsScreen {
             FriendsAPI.shared.loadFriends { [weak self] result in
                 DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult(result)
+                    self?.handleAPIResult( result.map { items in
+                        
+                        if User.shared?.isPremium == true {
+                            (UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate).cache.save(items)
+                        }
+                        
+                        return items.map { item in
+                            ListItemViewModel(friend: item, selection: {
+                                self?.select(friend: item)
+                            })
+                            
+                        }
+                    })
                 }
             }
         } else if fromCardsScreen {
             CardAPI.shared.loadCards { [weak self] result in
                 DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult(result)
+                    self?.handleAPIResult(result.map { items in
+                        items.map { item in
+                            ListItemViewModel(card: item, selection: {
+                                self?.select(card: item)
+                            })
+                            
+                        }
+                    })
                 }
             }
         } else if fromSentTransfersScreen || fromReceivedTransfersScreen {
-            TransfersAPI.shared.loadTransfers { [weak self] result in
+            TransfersAPI.shared.loadTransfers { [weak self, longDateStyle, fromSentTransfersScreen] result in
                 DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult(result)
+                    self?.handleAPIResult(result.map { items in
+                        items
+                            .filter { fromSentTransfersScreen ? $0.isSender : !$0.isSender }
+                            .map { item in
+                            ListItemViewModel(transfer: item, longDateStyle: longDateStyle, selection: {
+                                self?.select(transfer:item)
+                            })
+                            
+                        }
+                    })
                 }
             }
         } else {
@@ -90,46 +118,17 @@ class ListViewController: UITableViewController {
         }
     }
     
-    private func handleAPIResult<T>(_ result: Result<[T], Error>) {
+    private func handleAPIResult (_ result: Result<[ListItemViewModel], Error>) {
         switch result {
         case let .success(items):
-            if fromFriendsScreen && User.shared?.isPremium == true {
-                (UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate).cache.save(items as! [Friend])
-            }
             self.retryCount = 0
-            
-            var filteredItems = items as [Any]
-            if let transfers = items as? [Transfer] {
-                if fromSentTransfersScreen {
-                    filteredItems = transfers.filter(\.isSender)
-                } else {
-                    filteredItems = transfers.filter { !$0.isSender }
-                }
-            }
-            
-            self.items = filteredItems.map { item in
-                
-                ListItemViewModel(item: item, longDateStyle: longDateStyle) {
-                    [weak self] in
-                    if let friend = item as? Friend {
-                        self?.select(friend: friend)
-                    } else if let card = item as? Card {
-                        self?.select(card: card)
-                    } else if let transfer = item as? Transfer {
-                        self?.select(transfer: transfer)
-                    }else{
-                        fatalError("Unknow item type")
-                    }
-                }
-                
-            }
+            self.items = items
             self.refreshControl?.endRefreshing()
             self.tableView.reloadData()
             
         case let .failure(error):
             if shouldRetry && retryCount < maxRetryCount {
                 retryCount += 1
-                
                 refresh()
                 return
             }
