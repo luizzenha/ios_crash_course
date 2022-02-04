@@ -23,6 +23,22 @@ extension ItemService {
     }
 }
 
+struct ItemsServiceWithFallBack : ItemService {
+    let primary: ItemService
+    let fallback: ItemService
+    
+    func loadItems (completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
+        primary.loadItems { result in
+            switch result {
+            case .success:
+                completion(result)
+            case.failure:
+                fallback.loadItems(completion: completion)
+            }
+        }
+    }
+}
+
 
 struct FriendsAPIItemsServiceAdapter : ItemService {
     let api: FriendsAPI
@@ -140,17 +156,22 @@ struct  ReceivedTransfersAPIItemsServiceAdapter :ItemService {
 }
 
 
-struct ItemsServiceWithFallBack : ItemService {
-    let primary: ItemService
-    let fallback: ItemService
+
+struct ArticleAPIItemsSerivceAdapter : ItemService {
+    let api: ArticlesAPI
+    let select : (Article) -> Void
     
-    func loadItems (completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
-        primary.loadItems { result in
-            switch result {
-            case .success:
-                completion(result)
-            case.failure:
-                fallback.loadItems(completion: completion)
+    func loadItems(completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
+        api.loadArticles {  result in
+            DispatchQueue.mainAsyncIfNeeded {
+                completion( result.map { items in
+                    return items.map { item in
+                        ListItemViewModel(article: item, selection: {
+                            select(item)
+                        })
+                        
+                    }
+                })
             }
         }
     }

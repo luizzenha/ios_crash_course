@@ -23,6 +23,13 @@ extension UIViewController {
         show(vc, sender: self)
     }
     
+    func select(article: Article) {
+        let vc = ArticleViewController()
+        vc.article = article
+        show(vc, sender: self)
+    }
+    
+    
     @objc func addCard() {
         show(AddCardViewController(),sender: self)
     }

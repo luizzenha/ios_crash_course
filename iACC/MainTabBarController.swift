@@ -17,7 +17,8 @@ class MainTabBarController: UITabBarController {
         viewControllers = [
             makeNav(for: makeFriendsList(), title: "Friends", icon: "person.2.fill"),
             makeTransfersList(),
-            makeNav(for: makeCardsList(), title: "Cards", icon: "creditcard.fill")
+            makeNav(for: makeCardsList(), title: "Cards", icon: "creditcard.fill"),
+            makeNav(for: makeArtichelList(), title: "Articles", icon: "book.fill" )
         ]
     }
     
@@ -110,6 +111,16 @@ class MainTabBarController: UITabBarController {
         })
         vc.title = "Cards"
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: vc, action: #selector(addCard))
+        
+        return vc
+    }
+    
+    private func makeArtichelList() -> ListViewController {
+        let vc = ListViewController()
+        vc.service = ArticleAPIItemsSerivceAdapter(api: ArticlesAPI.shared, select: {
+            [weak vc] item in vc?.select(article: item)
+        })
+        vc.title = "Article"
         
         return vc
     }

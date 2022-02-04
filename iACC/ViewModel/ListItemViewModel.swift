@@ -68,3 +68,14 @@ extension ListItemViewModel {
         
     }
 }
+
+
+extension ListItemViewModel {
+    
+    init( article: Article , selection: @escaping () -> Void ) {
+        select = selection
+        title = article.title
+        subTitle = article.author
+        
+    }
+}

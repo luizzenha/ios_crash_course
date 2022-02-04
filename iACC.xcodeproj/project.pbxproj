@@ -250,6 +250,7 @@
 		08927BA82686183B009195BD /* iACCTests */ = {
 			isa = PBXGroup;
 			children = (
+				C7A9EEBE27ACC6B500B119E0 /* Articles */,
 				08041000268B4FFE0062A93B /* Helpers */,
 				0804100E268B54450062A93B /* Friends */,
 				0804101C268B635F0062A93B /* Transfers */,
@@ -292,6 +293,13 @@
 				C7A9EEBC27ACA45A00B119E0 /* ItemsService.swift */,
 			);
 			name = Services;
+			sourceTree = "<group>";
+		};
+		C7A9EEBE27ACC6B500B119E0 /* Articles */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Articles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
