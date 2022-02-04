@@ -25,3 +25,9 @@ class FriendsCache {
 		friends = newFriends
 	}
 }
+
+class NullFriendsCache : FriendsCache {
+    override func save(_ newFriends: [Friend]) {
+        ///do nothing  here
+    }
+}

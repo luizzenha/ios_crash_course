@@ -12,17 +12,13 @@ protocol ItemService {
 struct FriendsAPIItemsServiceAdapter : ItemService {
     let api: FriendsAPI
     let cache : FriendsCache
-    let isPremium: Bool
     let select : (Friend) -> Void
     
     func loadItems(completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
         api.loadFriends {  result in
             DispatchQueue.mainAsyncIfNeeded {
                 completion( result.map { items in
-                    
-                    if isPremium == true {
-                        cache.save(items)
-                    }
+                    cache.save(items)
                     
                     return items.map { item in
                         ListItemViewModel(friend: item, selection: {
