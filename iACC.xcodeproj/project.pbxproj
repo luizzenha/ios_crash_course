@@ -46,6 +46,7 @@
 		C7A9EEB427AC8D9C00B119E0 /* ListItemViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB327AC8D9C00B119E0 /* ListItemViewModel.swift */; };
 		C7A9EEB827ACA2FF00B119E0 /* UIViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB727ACA2FF00B119E0 /* UIViewController.swift */; };
 		C7A9EEBA27ACA33600B119E0 /* UITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */; };
+		C7A9EEBD27ACA45A00B119E0 /* ItemsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A9EEBC27ACA45A00B119E0 /* ItemsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +103,7 @@
 		C7A9EEB327AC8D9C00B119E0 /* ListItemViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ListItemViewModel.swift; path = ViewModel/ListItemViewModel.swift; sourceTree = "<group>"; };
 		C7A9EEB727ACA2FF00B119E0 /* UIViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UIViewController.swift; path = Extensions/UIViewController.swift; sourceTree = "<group>"; };
 		C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = UITableViewCell.swift; path = Extensions/UITableViewCell.swift; sourceTree = "<group>"; };
+		C7A9EEBC27ACA45A00B119E0 /* ItemsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ItemsService.swift; path = Services/ItemsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -224,6 +226,7 @@
 		08927B912686183A009195BD /* iACC */ = {
 			isa = PBXGroup;
 			children = (
+				C7A9EEBB27ACA44600B119E0 /* Services */,
 				C7A9EEB527ACA2E200B119E0 /* Extensions */,
 				C7A9EEB227AC8D6000B119E0 /* ViewModel */,
 				08927B922686183A009195BD /* AppDelegate.swift */,
@@ -281,6 +284,14 @@
 				C7A9EEB927ACA33600B119E0 /* UITableViewCell.swift */,
 			);
 			name = Extensions;
+			sourceTree = "<group>";
+		};
+		C7A9EEBB27ACA44600B119E0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				C7A9EEBC27ACA45A00B119E0 /* ItemsService.swift */,
+			);
+			name = Services;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -383,6 +394,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7A9EEBD27ACA45A00B119E0 /* ItemsService.swift in Sources */,
 				08927B932686183A009195BD /* AppDelegate.swift in Sources */,
 				C7A9EEBA27ACA33600B119E0 /* UITableViewCell.swift in Sources */,
 				08927BCF268618AC009195BD /* ListViewController.swift in Sources */,

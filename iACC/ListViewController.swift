@@ -7,15 +7,12 @@ import UIKit
 class ListViewController: UITableViewController {
     var items = [ListItemViewModel]()
     
+    var service: ItemService?
+    
     var retryCount = 0
     var maxRetryCount = 0
     var shouldRetry = false
     
-    var longDateStyle = false
-    
-    var fromReceivedTransfersScreen = false
-    var fromSentTransfersScreen = false
-    var fromCardsScreen = false
     var fromFriendsScreen = false
     
     override func viewDidLoad() {
@@ -23,38 +20,7 @@ class ListViewController: UITableViewController {
         
         refreshControl = UIRefreshControl()
         refreshControl?.addTarget(self, action: #selector(refresh), for: .valueChanged)
-        
-        if fromFriendsScreen {
-            shouldRetry = true
-            maxRetryCount = 2
-            
-            title = "Friends"
-            
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addFriend))
-            
-        } else if fromCardsScreen {
-            shouldRetry = false
-            
-            title = "Cards"
-            
-            navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addCard))
-            
-        } else if fromSentTransfersScreen {
-            shouldRetry = true
-            maxRetryCount = 1
-            longDateStyle = true
-            
-            navigationItem.title = "Sent"
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Send", style: .done, target: self, action: #selector(sendMoney))
-            
-        } else if fromReceivedTransfersScreen {
-            shouldRetry = true
-            maxRetryCount = 1
-            longDateStyle = false
-            
-            navigationItem.title = "Received"
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Request", style: .done, target: self, action: #selector(requestMoney))
-        }
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,55 +33,7 @@ class ListViewController: UITableViewController {
     
     @objc private func refresh() {
         refreshControl?.beginRefreshing()
-        if fromFriendsScreen {
-            FriendsAPI.shared.loadFriends { [weak self] result in
-                DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult( result.map { items in
-                        
-                        if User.shared?.isPremium == true {
-                            (UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate).cache.save(items)
-                        }
-                        
-                        return items.map { item in
-                            ListItemViewModel(friend: item, selection: {
-                                self?.select(friend: item)
-                            })
-                            
-                        }
-                    })
-                }
-            }
-        } else if fromCardsScreen {
-            CardAPI.shared.loadCards { [weak self] result in
-                DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult(result.map { items in
-                        items.map { item in
-                            ListItemViewModel(card: item, selection: {
-                                self?.select(card: item)
-                            })
-                            
-                        }
-                    })
-                }
-            }
-        } else if fromSentTransfersScreen || fromReceivedTransfersScreen {
-            TransfersAPI.shared.loadTransfers { [weak self, longDateStyle, fromSentTransfersScreen] result in
-                DispatchQueue.mainAsyncIfNeeded {
-                    self?.handleAPIResult(result.map { items in
-                        items
-                            .filter { fromSentTransfersScreen ? $0.isSender : !$0.isSender }
-                            .map { item in
-                            ListItemViewModel(transfer: item, longDateStyle: longDateStyle, selection: {
-                                self?.select(transfer:item)
-                            })
-                            
-                        }
-                    })
-                }
-            }
-        } else {
-            fatalError("unknown context")
-        }
+        service?.loadItems(completion: handleAPIResult)
     }
     
     private func handleAPIResult (_ result: Result<[ListItemViewModel], Error>) {
