@@ -53,19 +53,41 @@ struct CardAPIItemsServiceAdapter : ItemService {
     }
 }
 
-struct  TransfersAPIItemsServiceAdapter :ItemService {
+struct  SentTransfersAPIItemsServiceAdapter :ItemService {
     let api: TransfersAPI
     let select : (Transfer) -> Void
-    let longDateStyle, fromSentTransfersScreen: Bool
     
     func loadItems (completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
         api.loadTransfers { result in
             DispatchQueue.mainAsyncIfNeeded {
                 completion(result.map { items in
                     items
-                        .filter { fromSentTransfersScreen ? $0.isSender : !$0.isSender }
+                        .filter {  $0.isSender}
                         .map { item in
-                            ListItemViewModel(transfer: item, longDateStyle: longDateStyle, selection: {
+                            ListItemViewModel(transfer: item, longDateStyle: true, selection: {
+                                select(item)
+                            })
+                            
+                        }
+                })
+            }
+        }
+    }
+}
+
+
+struct  ReceivedTransfersAPIItemsServiceAdapter :ItemService {
+    let api: TransfersAPI
+    let select : (Transfer) -> Void
+    
+    func loadItems (completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
+        api.loadTransfers { result in
+            DispatchQueue.mainAsyncIfNeeded {
+                completion(result.map { items in
+                    items
+                        .filter { !$0.isSender }
+                        .map { item in
+                            ListItemViewModel(transfer: item, longDateStyle: false, selection: {
                                 select(item)
                             })
                             

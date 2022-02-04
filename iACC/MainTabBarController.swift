@@ -72,14 +72,12 @@ class MainTabBarController: UITabBarController {
     
     private func makeSentTransfersList() -> ListViewController {
         let vc = ListViewController()
-        vc.service = TransfersAPIItemsServiceAdapter(
+        vc.service = SentTransfersAPIItemsServiceAdapter(
             api: TransfersAPI.shared,
             select: {
                 [weak vc] item in
                 vc?.select(transfer: item)
-            },
-            longDateStyle: true,
-            fromSentTransfersScreen: true)
+            })
         vc.shouldRetry = true
         vc.maxRetryCount = 1
         vc.navigationItem.title = "Sent"
@@ -89,14 +87,12 @@ class MainTabBarController: UITabBarController {
     
     private func makeReceivedTransfersList() -> ListViewController {
         let vc = ListViewController()
-        vc.service = TransfersAPIItemsServiceAdapter(
+        vc.service = ReceivedTransfersAPIItemsServiceAdapter(
             api: TransfersAPI.shared,
             select: {
                 [weak vc] item in
                 vc?.select(transfer: item)
-            },
-            longDateStyle: false,
-            fromSentTransfersScreen: false)
+            })
         vc.shouldRetry = true
         vc.maxRetryCount = 1
         vc.navigationItem.title = "Received"
