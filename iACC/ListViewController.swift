@@ -6,14 +6,7 @@ import UIKit
 
 class ListViewController: UITableViewController {
     var items = [ListItemViewModel]()
-    
     var service: ItemService?
-    
-    var retryCount = 0
-    var maxRetryCount = 0
-    var shouldRetry = false
-    
-    var fromFriendsScreen = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,43 +32,14 @@ class ListViewController: UITableViewController {
     private func handleAPIResult (_ result: Result<[ListItemViewModel], Error>) {
         switch result {
         case let .success(items):
-            self.retryCount = 0
             self.items = items
             self.refreshControl?.endRefreshing()
             self.tableView.reloadData()
             
         case let .failure(error):
-            if shouldRetry && retryCount < maxRetryCount {
-                retryCount += 1
-                refresh()
-                return
-            }
+            self.show(error: error)
+            self.refreshControl?.endRefreshing()
             
-            retryCount = 0
-            
-            if fromFriendsScreen && User.shared?.isPremium == true {
-                (UIApplication.shared.connectedScenes.first?.delegate as! SceneDelegate).cache.loadFriends { [weak self] result in
-                    DispatchQueue.mainAsyncIfNeeded {
-                        switch result {
-                        case let .success(items):
-                            self?.items = items.map { item in
-                                ListItemViewModel(friend: item, selection:{
-                                    [weak self] in
-                                    self?.select(friend: item)
-                                } )
-                            }
-                            self?.tableView.reloadData()
-                            
-                        case let .failure(error):
-                            self?.show(error: error)
-                        }
-                        self?.refreshControl?.endRefreshing()
-                    }
-                }
-            } else {
-                self.show(error: error)
-                self.refreshControl?.endRefreshing()
-            }
         }
     }
     

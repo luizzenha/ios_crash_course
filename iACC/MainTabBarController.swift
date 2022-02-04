@@ -55,15 +55,21 @@ class MainTabBarController: UITabBarController {
     
     private func makeFriendsList() -> ListViewController {
         let vc = ListViewController()
-        vc.service = FriendsAPIItemsServiceAdapter(
+        let isPremium =  User.shared?.isPremium == true
+        let apiAdapter = FriendsAPIItemsServiceAdapter(
             api: FriendsAPI.shared,
-            cache: User.shared?.isPremium == true ? friendCache : NullFriendsCache(),
+            cache: isPremium ? friendCache : NullFriendsCache(),
             select: { [weak vc] item in
                 vc?.select(friend: item)
-            })
-        vc.fromFriendsScreen = true
-        vc.shouldRetry = true
-        vc.maxRetryCount = 2
+            }).retry(2)
+        let cacheAdapter = CachedFriendsItemsServiceAdapter(cache: friendCache, select: { [weak vc] item in
+            vc?.select(friend: item)
+        })
+        
+        vc.service = isPremium ? apiAdapter.fallBack(cacheAdapter) : apiAdapter
+        
+
+
         vc.title = "Friends"
         
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: vc, action: #selector(addFriend))
@@ -77,9 +83,8 @@ class MainTabBarController: UITabBarController {
             select: {
                 [weak vc] item in
                 vc?.select(transfer: item)
-            })
-        vc.shouldRetry = true
-        vc.maxRetryCount = 1
+            }).retry(1)
+
         vc.navigationItem.title = "Sent"
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Send", style: .done, target: vc, action: #selector(sendMoney))
         return vc
@@ -92,9 +97,7 @@ class MainTabBarController: UITabBarController {
             select: {
                 [weak vc] item in
                 vc?.select(transfer: item)
-            })
-        vc.shouldRetry = true
-        vc.maxRetryCount = 1
+            }).retry(1)
         vc.navigationItem.title = "Received"
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Request", style: .done, target: vc, action: #selector(requestMoney))
         return vc
@@ -105,7 +108,6 @@ class MainTabBarController: UITabBarController {
         vc.service = CardAPIItemsServiceAdapter(api: CardAPI.shared, select: {
             [weak vc] item in vc?.select(card: item)
         })
-        vc.shouldRetry = false
         vc.title = "Cards"
         vc.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: vc, action: #selector(addCard))
         

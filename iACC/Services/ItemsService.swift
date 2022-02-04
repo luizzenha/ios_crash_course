@@ -9,6 +9,21 @@ protocol ItemService {
     func loadItems(completion: @escaping (_ result: Result<[ListItemViewModel], Error>) -> Void )
 }
 
+extension ItemService {
+    func fallBack (_ fallBack: ItemService) -> ItemService {
+        ItemsServiceWithFallBack(primary: self, fallback: fallBack)
+    }
+    
+    func retry(_ retryCount: UInt) -> ItemService {
+        var service: ItemService = self
+        for _ in 0..<retryCount {
+            service = service.fallBack(self)
+        }
+        return service
+    }
+}
+
+
 struct FriendsAPIItemsServiceAdapter : ItemService {
     let api: FriendsAPI
     let cache : FriendsCache
@@ -31,6 +46,32 @@ struct FriendsAPIItemsServiceAdapter : ItemService {
         }
     }
 }
+
+
+struct CachedFriendsItemsServiceAdapter : ItemService {
+    let cache : FriendsCache
+    let select : (Friend) -> Void
+    
+    func loadItems(completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
+        
+        cache.loadFriends { result in
+            DispatchQueue.mainAsyncIfNeeded {
+                completion( result.map { items in
+                    
+                    items.map { item in
+                        ListItemViewModel(friend: item, selection:{
+                            select(item)
+                        })
+                        
+                    }
+                })
+            }
+        }
+    }
+}
+
+
+
 
 
 struct CardAPIItemsServiceAdapter : ItemService {
@@ -93,6 +134,23 @@ struct  ReceivedTransfersAPIItemsServiceAdapter :ItemService {
                             
                         }
                 })
+            }
+        }
+    }
+}
+
+
+struct ItemsServiceWithFallBack : ItemService {
+    let primary: ItemService
+    let fallback: ItemService
+    
+    func loadItems (completion: @escaping (Result<[ListItemViewModel], Error>) -> Void) {
+        primary.loadItems { result in
+            switch result {
+            case .success:
+                completion(result)
+            case.failure:
+                fallback.loadItems(completion: completion)
             }
         }
     }
